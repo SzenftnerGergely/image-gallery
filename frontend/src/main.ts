@@ -9,7 +9,6 @@ const nameInputDOM = document.querySelector("#name") as HTMLInputElement;
 const titleInputDOM = document.querySelector("#title") as HTMLInputElement;
 const urlInputDOM = document.querySelector("#url") as HTMLInputElement;
 
-
 type ImagesData = {
   name: string,
   title: string,
@@ -55,31 +54,57 @@ const renderImages = (result: any) => {
   const images = document.getElementsByClassName("images") as HTMLCollectionOf<HTMLButtonElement>;
   for (let i = 0; i < images.length; i++) {
     const element = images[i];
-    element.addEventListener("dblclick", event);
+    element.addEventListener("dblclick", deleteEvent);
   }
 };
 
-const event =  async (e: MouseEvent) => {
-  let id = ((e.target) as HTMLDivElement).id
+const updateImages = (result: ImagesData) => {
+
+  swiperWrapper.innerHTML += `
+  <div class="swiper-slide">
+    <img class="images" id=${result.id} src="${result.url}" />
+  </div>
+`;
+
+  const images = document.getElementsByClassName("images") as HTMLCollectionOf<HTMLButtonElement>;
+  for (let i = 0; i < images.length; i++) {
+    const element = images[i];
+    element.addEventListener("dblclick", deleteEvent);
+  }
+};
+
+const deleteImages = (result: any) => {
+  swiperWrapper.innerHTML = ""
+
+  for (let i = 0; i < result.length; i++) {
+
+    swiperWrapper.innerHTML += `
+    <div class="swiper-slide">
+      <img class="images" id=${result[i].id} src="${result[i].url}" />
+    </div>
+  `;
+  }
+
+  const images = document.getElementsByClassName("images") as HTMLCollectionOf<HTMLButtonElement>;
+  for (let i = 0; i < images.length; i++) {
+    const element = images[i];
+    element.addEventListener("dblclick", deleteEvent);
+  }
+
+};
+
+const deleteEvent =  async (e: MouseEvent) => {
+  const id = ((e.target) as HTMLDivElement).id
   try {
     await axios.delete(`http://localhost:3000/api/images/${id}`)
     .then((response) => {
       console.log(response.data);
-      updateImages(response.data)
+      deleteImages(response.data)
     });
   } catch (error) {
     console.log(error)
   }
 }
-
-const updateImages = (data: ImagesData) => {
-
-    swiperWrapper.innerHTML += `
-    <div class="swiper-slide">
-      <img id=${data.id} src="${data.url}" />
-    </div>
-  `;
-};
 
 formDOM.addEventListener("submit", async (e) => {
   e.preventDefault()

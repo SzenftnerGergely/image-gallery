@@ -111,6 +111,10 @@ body {
   justify-content: space-between;
 }
 
+.delete-hint{
+  font-family: 'Inter', sans-serif;
+}
+
 @media screen and (max-width: 620px) {
   .btn-group {
     display: flex;
