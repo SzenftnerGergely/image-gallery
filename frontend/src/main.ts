@@ -1,6 +1,7 @@
 import "./style.css";
 import Swiper from "swiper/bundle";
 import axios from "axios";
+import { z } from "zod"
 import { nanoid } from 'nanoid'
 import { htmlEventLoop } from "./utils/htmlEventLoop"
 
@@ -17,12 +18,14 @@ type FormImagesData = {
   id: string,
 }
 
-type ResultImagesData = {
-  name: string,
-  title: string,
-  url: string,
-  id: string,
-}[]
+const ResultImagesData = z.array(z.object({
+  name: z.string(),
+  title: z.string(),
+  url: z.string(),
+  id: z.string(),
+}))
+
+type ResultImagesData = z.infer<typeof ResultImagesData>
 
 const swiper = new Swiper(".mySwiper", {
   effect: "coverflow",
@@ -43,10 +46,14 @@ const swiper = new Swiper(".mySwiper", {
 
 const getData = async () => {
 
+  try {
     const response = await axios.get("http://localhost:3000/api/images");
-    const result = response.data
-
+    const result = ResultImagesData.parse(response.data)
     renderImages(result)
+  } catch (error) {
+    console.log(error)
+  }
+
 };
 
 const renderImages = (result: ResultImagesData) => {
@@ -96,7 +103,7 @@ const deleteEvent =  async (e: Event) => {
   }
 }
 
-formDOM.addEventListener("submit", async (e) => {
+formDOM.addEventListener("submit", async (e: Event) => {
   e.preventDefault()
 
   const uploadJSON = async (imagesData: FormImagesData) => {
