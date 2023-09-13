@@ -57,8 +57,7 @@ const renderImages = (result: ResultImagesData) => {
     </div>
   `;
   }
-
-  htmlEventLoop("images", deleteEvent)
+  htmlEventLoop("images", "dblclick", deleteEvent)
 };
 
 const updateImages = (result: FormImagesData) => {
@@ -68,8 +67,7 @@ const updateImages = (result: FormImagesData) => {
     <img class="images" id=${result.id} src="${result.url}" />
   </div>
 `;
-
-htmlEventLoop("images", deleteEvent)
+  htmlEventLoop("images", "dblclick", deleteEvent)
 };
 
 const deleteImages = (result: ResultImagesData) => {
@@ -82,8 +80,7 @@ const deleteImages = (result: ResultImagesData) => {
     </div>
   `;
   }
-
-  htmlEventLoop("images", deleteEvent)
+  htmlEventLoop("images", "dblclick", deleteEvent)
 };
 
 const deleteEvent =  async (e: Event) => {
