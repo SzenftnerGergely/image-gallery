@@ -11,12 +11,12 @@ const nameInputDOM = document.querySelector("#name") as HTMLInputElement;
 const titleInputDOM = document.querySelector("#title") as HTMLInputElement;
 const urlInputDOM = document.querySelector("#url") as HTMLInputElement;
 
-type FormImagesData = {
-  name: string,
-  title: string,
-  url: string,
-  id: string,
-}
+const FormImagesData = z.object({
+  name: z.string(),
+  title: z.string(),
+  url: z.string(),
+  id: z.string(),
+})
 
 const ResultImagesData = z.array(z.object({
   name: z.string(),
@@ -25,6 +25,7 @@ const ResultImagesData = z.array(z.object({
   id: z.string(),
 }))
 
+type FormImagesData = z.infer<typeof FormImagesData>
 type ResultImagesData = z.infer<typeof ResultImagesData>
 
 const swiper = new Swiper(".mySwiper", {
@@ -67,36 +68,14 @@ const renderImages = (result: ResultImagesData) => {
   htmlEventLoop("images", "dblclick", deleteEvent)
 };
 
-const updateImages = (result: FormImagesData) => {
-
-  swiperWrapper.innerHTML += `
-  <div class="swiper-slide">
-    <img class="images" id=${result.id} src="${result.url}" />
-  </div>
-`;
-  htmlEventLoop("images", "dblclick", deleteEvent)
-};
-
-const deleteImages = (result: ResultImagesData) => {
-  swiperWrapper.innerHTML = ""
-
-  for (let i = 0; i < result.length; i++) {
-    swiperWrapper.innerHTML += `
-    <div class="swiper-slide">
-      <img class="images" id=${result[i].id} src="${result[i].url}" />
-    </div>
-  `;
-  }
-  htmlEventLoop("images", "dblclick", deleteEvent)
-};
-
 const deleteEvent =  async (e: Event) => {
   const id = ((e.target) as HTMLDivElement).id
   try {
-    await axios.delete(`http://localhost:3000/api/images/${id}`)
+    await axios
+    .delete(`http://localhost:3000/api/images/${id}`)
     .then((response) => {
-      console.log(response.data);
-      deleteImages(response.data)
+      swiperWrapper.innerHTML = ""
+      renderImages(response.data)
     });
   } catch (error) {
     console.log(error)
@@ -106,11 +85,14 @@ const deleteEvent =  async (e: Event) => {
 formDOM.addEventListener("submit", async (e: Event) => {
   e.preventDefault()
 
-  const uploadJSON = async (imagesData: FormImagesData) => {
+  const uploadJSON = async (inputData: FormImagesData) => {
     try {
       await axios
         .post("http://localhost:3000/api/images", inputData)
-        updateImages(imagesData)
+        .then((response) => {
+          swiperWrapper.innerHTML = ""
+          renderImages(response.data)
+        });
     } catch (error) {
       console.log(error);
     }

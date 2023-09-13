@@ -4,7 +4,6 @@ import type { Request, Response } from "express"
 import cors from "cors"
 import {z} from "zod"
 
-
 const app = express()
 const port = 3000
 
@@ -34,7 +33,7 @@ app.post("/api/images", async (req: Request, res: Response) => {
     const images = JSON.parse(imageData)
     images.push(result.data)
     await fs.writeFile("./data/data.json", JSON.stringify(images), "utf-8")
-    
+
     res.status(200).json(images)
 })
 
